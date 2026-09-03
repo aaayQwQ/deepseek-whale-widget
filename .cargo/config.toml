@@ -1,27 +1,44 @@
-# .cargo/config.toml
-# 本配置专门为 GitHub Actions 在线编译优化
+[package]
+name = "whale-widget"
+version = "1.0.0"
+edition = "2021"
+description = "DeepSeek 小鲸鱼余额桌面挂件 - 便携版"
+authors = ["Your Name"]
+license = "MIT"
+repository = "https://github.com/yourname/deepseek-whale-widget"
 
-# ========== Windows 目标配置（生成独立 exe） ==========
-[target.x86_64-pc-windows-msvc]
-# 静态链接 CRT，使 exe 不依赖外部 DLL
-rustflags = ["-C", "target-feature=+crt-static", "-C", "link-arg=-s"]
-# 使用 MSVC 链接器（GitHub Actions 默认环境）
-linker = "link.exe"
+[dependencies]
+# GUI 框架 - 修正：去掉 renderer，只保留 wgpu
+eframe = { version = "0.24", default-features = false, features = ["wgpu"] }
+egui = "0.24"
 
-# ========== 以下配置用于交叉编译（可选） ==========
-# 如果你暂时不需要编译 Linux/macOS 版本，保留下面这些不影响 Windows 编译
+# HTTP 请求 - rustls 静态链接
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "json"] }
+tokio = { version = "1.0", features = ["rt"] }
 
-[target.x86_64-unknown-linux-gnu]
-rustflags = ["-C", "target-feature=+crt-static"]
+# 序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 
-[target.aarch64-unknown-linux-gnu]
-rustflags = ["-C", "target-feature=+crt-static"]
+# 图片加载（如果你不用 PNG 可以去掉）
+image = { version = "0.24", default-features = false, features = ["png"] }
 
-[target.x86_64-apple-darwin]
-rustflags = ["-C", "link-arg=-dead_strip"]
+# 系统功能
+dirs = "5.0"
+chrono = "0.4"
+rand = "0.8"
 
-[target.aarch64-apple-darwin]
-rustflags = ["-C", "link-arg=-dead_strip"]
+# 日志
+log = "0.4"
 
-[target.x86_64-unknown-linux-musl]
-rustflags = ["-C", "target-feature=+crt-static"]
+[profile.release]
+# 极端优化 - 减小体积
+lto = true
+strip = true
+codegen-units = 1
+opt-level = "z"
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true
