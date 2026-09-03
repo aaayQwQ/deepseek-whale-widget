@@ -1,0 +1,33 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]  # 当推送到 main 分支时触发
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: windows-latest  # 使用 Windows 运行环境
+
+    steps:
+    - uses: actions/checkout@v4  # 拉取你的代码
+    
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: x86_64-pc-windows-msvc
+        override: true
+
+    - name: Build release executable
+      run: cargo build --release --verbose  # 执行编译
+
+    - name: Upload artifact (the .exe file)
+      uses: actions/upload-artifact@v4
+      with:
+        name: whale-widget-windows  # 制品名称
+        path: target/release/whale-widget.exe  # 要上传的文件路径
