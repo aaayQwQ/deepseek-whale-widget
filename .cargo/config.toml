@@ -1,24 +1,31 @@
-# Rust 编译配置 - 静态链接所有依赖
+# .cargo/config.toml
 
+# 全局 Rust 编译配置
+[build]
+# 如果需要，可以在这里设置默认目标平台
+# target = "x86_64-pc-windows-msvc"
+
+# ========== Windows 目标配置 ==========
 [target.x86_64-pc-windows-msvc]
+# 静态链接 CRT (C运行时库)，生成不依赖外部 DLL 的 exe
 rustflags = ["-C", "target-feature=+crt-static", "-C", "link-arg=-s"]
+# 使用 MSVC 链接器 (通常默认就是，显式指定也无妨)
+linker = "link.exe"
 
+# ========== Linux 目标配置 (可选，用于交叉编译) ==========
 [target.x86_64-unknown-linux-gnu]
 rustflags = ["-C", "target-feature=+crt-static"]
 
 [target.aarch64-unknown-linux-gnu]
 rustflags = ["-C", "target-feature=+crt-static"]
 
+# ========== macOS 目标配置 (可选，用于交叉编译) ==========
 [target.x86_64-apple-darwin]
 rustflags = ["-C", "link-arg=-dead_strip"]
 
 [target.aarch64-apple-darwin]
 rustflags = ["-C", "link-arg=-dead_strip"]
 
-# 使用系统链接器（Windows 用 MSVC）
-[target.x86_64-pc-windows-msvc]
-linker = "link.exe"
-
-# 使用 musl 实现完全静态链接 Linux
+# ========== Linux musl (完全静态链接) ==========
 [target.x86_64-unknown-linux-musl]
 rustflags = ["-C", "target-feature=+crt-static"]
