@@ -1,0 +1,44 @@
+[package]
+name = "whale-widget"
+version = "1.0.0"
+edition = "2021"
+description = "DeepSeek 小鲸鱼余额桌面挂件 - 便携版"
+authors = ["Your Name"]
+license = "MIT"
+repository = "https://github.com/yourname/deepseek-whale-widget"
+
+[dependencies]
+# GUI 框架 - 最小化
+eframe = { version = "0.24", default-features = false, features = ["wgpu", "renderer"] }
+egui = "0.24"
+
+# HTTP 请求 - rustls 静态链接
+reqwest = { version = "0.11", default-features = false, features = ["rustls-tls", "json"] }
+tokio = { version = "1.0", features = ["rt"] }
+
+# 序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 图片加载（可选，如果你不用 PNG 可以去掉）
+image = { version = "0.24", default-features = false, features = ["png"] }
+
+# 系统功能
+dirs = "5.0"
+chrono = "0.4"
+rand = "0.8"
+
+# 日志
+log = "0.4"
+
+[profile.release]
+# 极端优化 - 减小体积
+lto = true
+strip = true
+codegen-units = 1
+opt-level = "z"
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true
