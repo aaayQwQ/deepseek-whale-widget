@@ -1,31 +1,27 @@
 # .cargo/config.toml
+# 本配置专门为 GitHub Actions 在线编译优化
 
-# 全局 Rust 编译配置
-[build]
-# 如果需要，可以在这里设置默认目标平台
-# target = "x86_64-pc-windows-msvc"
-
-# ========== Windows 目标配置 ==========
+# ========== Windows 目标配置（生成独立 exe） ==========
 [target.x86_64-pc-windows-msvc]
-# 静态链接 CRT (C运行时库)，生成不依赖外部 DLL 的 exe
+# 静态链接 CRT，使 exe 不依赖外部 DLL
 rustflags = ["-C", "target-feature=+crt-static", "-C", "link-arg=-s"]
-# 使用 MSVC 链接器 (通常默认就是，显式指定也无妨)
+# 使用 MSVC 链接器（GitHub Actions 默认环境）
 linker = "link.exe"
 
-# ========== Linux 目标配置 (可选，用于交叉编译) ==========
+# ========== 以下配置用于交叉编译（可选） ==========
+# 如果你暂时不需要编译 Linux/macOS 版本，保留下面这些不影响 Windows 编译
+
 [target.x86_64-unknown-linux-gnu]
 rustflags = ["-C", "target-feature=+crt-static"]
 
 [target.aarch64-unknown-linux-gnu]
 rustflags = ["-C", "target-feature=+crt-static"]
 
-# ========== macOS 目标配置 (可选，用于交叉编译) ==========
 [target.x86_64-apple-darwin]
 rustflags = ["-C", "link-arg=-dead_strip"]
 
 [target.aarch64-apple-darwin]
 rustflags = ["-C", "link-arg=-dead_strip"]
 
-# ========== Linux musl (完全静态链接) ==========
 [target.x86_64-unknown-linux-musl]
 rustflags = ["-C", "target-feature=+crt-static"]
